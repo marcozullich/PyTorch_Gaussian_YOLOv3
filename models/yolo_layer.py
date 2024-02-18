@@ -79,7 +79,7 @@ class YOLOLayer(nn.Module):
         n_ch = 5 + self.n_classes  # channels per anchor w/o xywh unceartainties
         dtype = torch.cuda.FloatTensor if xin.is_cuda else torch.FloatTensor
 
-        output = output.view(batchsize, self.n_anchors, -1, fsize, fsize)
+        output = output.reshape(batchsize, self.n_anchors, -1, fsize, fsize)
         output = output.permute(0, 1, 3, 4, 2)  # shape: [batch, anchor, grid_y, grid_x, channels_per_anchor]
 
         if self.gaussian:
@@ -116,11 +116,11 @@ class YOLOLayer(nn.Module):
 
         if labels is None:  # not training
             pred[..., :4] *= self.stride
-            pred = pred.view(batchsize, -1, n_ch)  # shsape: [batch, anchor x grid_y x grid_x, n_class + 5]
+            pred = pred.reshape(batchsize, -1, n_ch)  # shsape: [batch, anchor x grid_y x grid_x, n_class + 5]
 
             if self.gaussian:
                 # scale objectness confidence with xywh uncertainties
-                sigma_xywh = sigma_xywh.view(batchsize, -1, 4)  # shsape: [batch, anchor x grid_y x grid_x, 4]
+                sigma_xywh = sigma_xywh.reshape(batchsize, -1, 4)  # shsape: [batch, anchor x grid_y x grid_x, 4]
                 sigma = sigma_xywh.mean(dim=-1)
                 pred[..., 4] *= (1.0 - sigma)
 
@@ -179,10 +179,10 @@ class YOLOLayer(nn.Module):
             truth_box[:n, 1] = truth_y_all[b, :n]
 
             pred_ious = bboxes_iou(
-                pred[b].view(-1, 4), truth_box, xyxy=False)
+                pred[b].reshape(-1, 4), truth_box, xyxy=False)
             pred_best_iou, _ = pred_ious.max(dim=1)
             pred_best_iou = (pred_best_iou > self.ignore_thre)
-            pred_best_iou = pred_best_iou.view(pred[b].shape[:3])
+            pred_best_iou = pred_best_iou.reshape(pred[b].shape[:3])
             # set mask to zero (ignore) if pred matches truth
             obj_mask[b] = 1 - pred_best_iou
 

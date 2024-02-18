@@ -372,7 +372,7 @@ def get_coco_label_names():
                       46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67,
                       70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88, 89, 90]
 
-    coco_cls_colors = np.empty(shape=(0, 3), dtype=np.int)
+    coco_cls_colors = np.empty(shape=(0, 3), dtype="int")
     palette = sns.color_palette(n_colors=len(coco_class_ids))
     for color in palette:
         r, g, b = color[0] * 255, color[1] * 255, color[2] * 255
